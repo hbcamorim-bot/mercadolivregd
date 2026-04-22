@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id                String           @id @default(cuid())
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  nome              String
+  cpf               String
+  email             String
+  telefone          String
+
+  endereco          String
+  cidade            String
+  estado            String
+  cep               String
+
+  distribuidora     String
+  valorMedio        Float
+  consumoMedio      Float?
+
+  contaEnergiaUrl   String?
+  documentoUrl      String?
+
+  status            String           @default("NOVO_CADASTRO")
+  observacoes       String?
+
+  aceiteLgpd        Boolean          @default(false)
+  aceitePrivacidade Boolean          @default(false)
+}
+
+model Fornecedor {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  nome            String
+  email           String
+  telefone        String
+  kwhDisponivel   Float
+  regiaoAtuacao   String
+  distribuidoras  String
+  observacoes     String?
+  status          String   @default("ATIVO")
+}
