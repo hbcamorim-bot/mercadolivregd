@@ -70,9 +70,12 @@ async function enviar(subject: string, html: string, waMessage: string) {
 }
 
 async function enviarEmail(subject: string, html: string) {
-  if (!RESEND_API_KEY) return;
+  if (!RESEND_API_KEY) {
+    console.error("[notify:email] RESEND_API_KEY não definida");
+    return;
+  }
   try {
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${RESEND_API_KEY}`,
@@ -85,8 +88,14 @@ async function enviarEmail(subject: string, html: string) {
         html,
       }),
     });
+    const body = await res.json();
+    if (!res.ok) {
+      console.error("[notify:email] Resend erro:", res.status, JSON.stringify(body));
+    } else {
+      console.log("[notify:email] Enviado:", body.id);
+    }
   } catch (err) {
-    console.error("[notify:email]", err);
+    console.error("[notify:email] Exceção:", err);
   }
 }
 
