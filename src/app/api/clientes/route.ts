@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { saveUploadedFile } from "@/lib/server-utils";
+import { notifyNovoCliente } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -61,6 +62,8 @@ export async function POST(request: Request) {
         status: "NOVO_CADASTRO",
       },
     });
+
+    await notifyNovoCliente({ nome, email, telefone, cidade, estado, distribuidora, valorMedio });
 
     return NextResponse.json({ success: true, id: cliente.id }, { status: 201 });
   } catch (err) {

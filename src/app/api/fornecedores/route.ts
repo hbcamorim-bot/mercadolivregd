@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { notifyNovoFornecedor } from "@/lib/notifications";
 
 export async function POST(request: Request) {
   try {
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
         status: "ATIVO",
       },
     });
+
+    await notifyNovoFornecedor({ nome, email, telefone, kwhDisponivel: parseFloat(String(kwhDisponivel)), regiaoAtuacao, distribuidoras, faixaDesconto, tipoOferta });
 
     return NextResponse.json({ success: true, id: fornecedor.id }, { status: 201 });
   } catch (err) {
