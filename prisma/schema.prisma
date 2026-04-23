@@ -13,14 +13,14 @@ model Cliente {
   updatedAt         DateTime         @updatedAt
 
   nome              String
-  cpf               String
+  cpf               String?
   email             String
   telefone          String
 
-  endereco          String
+  endereco          String?
   cidade            String
   estado            String
-  cep               String
+  cep               String?
 
   distribuidora     String
   valorMedio        Float
@@ -37,16 +37,22 @@ model Cliente {
 }
 
 model Fornecedor {
-  id              String   @id @default(cuid())
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  nome            String
-  email           String
-  telefone        String
-  kwhDisponivel   Float
-  regiaoAtuacao   String
-  distribuidoras  String
-  observacoes     String?
-  status          String   @default("ATIVO")
+  nome                 String
+  email                String
+  telefone             String
+  kwhDisponivel        Float
+  regiaoAtuacao        String
+  distribuidoras       String
+  cidade               String?
+  estado               String?
+  faixaDesconto        String?
+  perfilCliente        String?
+  tipoOferta           String?
+  prazoDisponibilidade String?
+  observacoes          String?
+  status               String   @default("ATIVO")
 }

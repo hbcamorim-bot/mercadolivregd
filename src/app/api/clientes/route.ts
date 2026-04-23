@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     const aceiteLgpd = formData.get("aceiteLgpd") === "true";
     const aceitePrivacidade = formData.get("aceitePrivacidade") === "true";
 
-    if (!nome || !cpf || !email || !telefone || !distribuidora || !valorMedio) {
+    if (!nome || !email || !telefone || !cidade || !estado || !distribuidora || !valorMedio) {
       return NextResponse.json(
         { error: "Campos obrigatórios ausentes" },
         { status: 400 }

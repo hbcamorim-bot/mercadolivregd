@@ -27,11 +27,11 @@ export default function FornecedorPage() {
               Cadastro de Fornecedor
             </span>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Oferte sua energia e amplie seus negócios
+              Cadastrar energia disponível
             </h1>
             <p className="text-slate-300 max-w-xl mx-auto">
-              Informe a quantidade de kWh disponível e conecte-se com clientes
-              qualificados que buscam economia na conta de luz.
+              Informe sua disponibilidade de energia e conecte-se com clientes
+              compatíveis por perfil, localização e distribuidora.
             </p>
           </div>
 

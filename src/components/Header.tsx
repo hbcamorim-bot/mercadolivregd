@@ -44,14 +44,11 @@ export default function Header() {
             <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-energy-500 shadow-glow group-hover:scale-105 transition-transform">
               <Zap className="w-5 h-5 text-white" strokeWidth={2.5} />
             </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-white font-bold text-base tracking-tight">
-                mercadolivre
-              </span>
-              <span className="text-energy-400 font-bold text-base tracking-tight -mt-0.5">
-                GD.com
-              </span>
-            </div>
+            <span className="font-bold text-base tracking-tight whitespace-nowrap">
+              <span className="text-white">Mercadolivre</span>
+              <span className="text-energy-400">GD</span>
+              <span className="text-white">.com</span>
+            </span>
           </Link>
 
           {/* Desktop Nav */}

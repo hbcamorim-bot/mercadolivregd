@@ -4,7 +4,11 @@ import { prisma } from "@/lib/db";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { nome, email, telefone, kwhDisponivel, regiaoAtuacao, distribuidoras, observacoes } = body;
+    const {
+      nome, email, telefone, kwhDisponivel, regiaoAtuacao, distribuidoras,
+      cidade, estado, faixaDesconto, perfilCliente, tipoOferta,
+      prazoDisponibilidade, observacoes,
+    } = body;
 
     if (!nome || !email || !telefone || !kwhDisponivel || !regiaoAtuacao || !distribuidoras) {
       return NextResponse.json({ error: "Campos obrigatórios ausentes" }, { status: 400 });
@@ -18,6 +22,12 @@ export async function POST(request: Request) {
         kwhDisponivel: parseFloat(String(kwhDisponivel)),
         regiaoAtuacao,
         distribuidoras,
+        cidade: cidade || null,
+        estado: estado || null,
+        faixaDesconto: faixaDesconto || null,
+        perfilCliente: perfilCliente || null,
+        tipoOferta: tipoOferta || null,
+        prazoDisponibilidade: prazoDisponibilidade || null,
         observacoes: observacoes || null,
         status: "ATIVO",
       },

@@ -27,11 +27,11 @@ export default function EconomizarPage() {
               Cadastro Gratuito
             </span>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Quero economizar na minha conta de energia
+              Solicitar análise gratuita
             </h1>
             <p className="text-slate-300 max-w-xl mx-auto">
-              Preencha o formulário abaixo. Nossa equipe analisa o seu perfil
-              e entra em contato com uma proposta personalizada.
+              Preencha o formulário abaixo. Nossa equipe analisa seu perfil e
+              entra em contato com uma proposta antes de qualquer compromisso.
             </p>
           </div>
 

@@ -1,29 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Zap, Target, Eye, Heart, ArrowRight } from "lucide-react";
+import { Zap, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Sobre Nós",
+  title: "Sobre",
   description:
-    "Conheça o Mercado Livre GD, a plataforma que conecta clientes e fornecedores de energia em todo o Brasil.",
+    "Conheça o Mercado Livre GD: quem somos, o que fazemos, para quem é e qual é o nosso diferencial.",
 };
 
-const VALUES = [
-  {
-    icon: Target,
-    title: "Missão",
-    desc: "Democratizar o acesso ao mercado livre de energia, conectando consumidores e fornecedores de forma eficiente, transparente e segura, gerando economia real para todos os envolvidos.",
-  },
-  {
-    icon: Eye,
-    title: "Visão",
-    desc: "Ser a maior e mais confiável plataforma de marketplace de energia do Brasil, referência em inovação, tecnologia e resultados no setor elétrico.",
-  },
-  {
-    icon: Heart,
-    title: "Valores",
-    desc: "Transparência, segurança, foco em resultados, ética nos negócios, compromisso com a economia dos clientes e respeito ao meio ambiente.",
-  },
+const DIFERENCIAIS = [
+  "Sem placas solares — o desconto aparece na fatura da própria distribuidora",
+  "Proposta antes de qualquer compromisso — nada é assinado sem aprovação do cliente",
+  "Análise técnica real — não fazemos promessa sem verificar a elegibilidade primeiro",
+  "Atuação nacional — operamos em todo o Brasil",
+  "Processo conduzido pela nossa equipe — você não precisa entender de energia para economizar",
 ];
 
 export default function SobrePage() {
@@ -39,59 +29,77 @@ export default function SobrePage() {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Sobre o Mercado Livre GD
+            Sobre o MercadolivreGD.com
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-            Uma plataforma criada para transformar a forma como o Brasil
-            consome e comercializa energia elétrica.
+            Uma plataforma de intermediação que conecta quem paga caro na energia
+            com quem tem energia disponível para comercializar.
           </p>
         </div>
       </section>
 
       {/* Quem somos */}
       <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="prose prose-lg max-w-none text-slate-600">
-            <h2 className="text-3xl font-bold text-navy mb-6">Quem somos</h2>
-            <p className="leading-relaxed mb-4">
-              O <strong>Mercado Livre GD</strong> é uma plataforma digital de
-              marketplace de energia que conecta consumidores que desejam
-              economizar na conta de luz com fornecedores de energia renovável
-              e geração distribuída (GD) em todo o Brasil.
-            </p>
-            <p className="leading-relaxed mb-4">
-              Nascemos com o propósito de simplificar e democratizar o acesso
-              ao mercado livre de energia, tornando o processo transparente,
-              seguro e acessível para residências, empresas e estabelecimentos
-              comerciais de todo o país.
-            </p>
-            <p className="leading-relaxed mb-6">
-              Nossa plataforma opera como intermediária especializada,
-              conduzindo todo o processo: do cadastro inicial, passando pela
-              análise de perfil, até o fechamento do contrato e o início da
-              economia na conta de energia.
-            </p>
-          </div>
-        </div>
-      </section>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
-      {/* Missão, Visão, Valores */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="section-title">Nossa essência</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-navy mb-4">Quem somos</h2>
+            <p className="text-slate-600 leading-relaxed">
+              O <strong>MercadolivreGD.com</strong> é uma plataforma de intermediação de energia renovável.
+              Conectamos consumidores que pagam contas altas com geradores de energia solar distribuída
+              que têm capacidade disponível para comercializar.
+            </p>
+            <p className="text-slate-600 leading-relaxed mt-4">
+              Somos uma equipe especializada em energia distribuída, com foco em organizar e conduzir
+              o processo de ponta a ponta — do cadastro do cliente até o fechamento do contrato com o fornecedor.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {VALUES.map((v) => (
-              <div key={v.title} className="card border border-transparent hover:border-brand-100 transition-all">
-                <div className="w-12 h-12 rounded-xl bg-gradient-energy flex items-center justify-center mb-4">
-                  <v.icon className="w-6 h-6 text-white" />
+
+          <div>
+            <h2 className="text-2xl font-bold text-navy mb-4">O que fazemos</h2>
+            <p className="text-slate-600 leading-relaxed">
+              Fazemos todo o trabalho: analisamos o perfil do cliente, verificamos a elegibilidade,
+              buscamos fornecedores compatíveis por distribuidora e região, e apresentamos a proposta
+              com condições claras antes de qualquer avanço.
+            </p>
+            <p className="text-slate-600 leading-relaxed mt-4">
+              O cliente não precisa entender de energia para economizar. O fornecedor não precisa
+              prospectar clientes para comercializar. Cuidamos dos dois lados.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-navy mb-4">Para quem é</h2>
+            <p className="text-slate-600 leading-relaxed">
+              Para <strong>residências, condomínios, comércios e indústrias</strong> com contas de energia
+              acima de R$ 300/mês que querem reduzir esse custo sem instalar nada.
+            </p>
+            <p className="text-slate-600 leading-relaxed mt-4">
+              E para <strong>geradores de energia solar</strong> que têm capacidade disponível e querem
+              comercializá-la de forma eficiente, com leads qualificados e suporte na negociação.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold text-navy mb-6">Nossos diferenciais</h2>
+            <div className="space-y-3">
+              {DIFERENCIAIS.map((d) => (
+                <div key={d} className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-energy-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-slate-600">{d}</p>
                 </div>
-                <h3 className="font-bold text-navy text-xl mb-3">{v.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{v.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          <div className="border-l-4 border-energy-500 pl-6">
+            <p className="text-slate-700 font-medium text-lg leading-relaxed">
+              Nosso compromisso é com clareza, agilidade e organização em cada etapa do processo.
+              Não prometemos o que não podemos entregar, e não avançamos sem que o cliente esteja
+              informado e de acordo.
+            </p>
+          </div>
+
         </div>
       </section>
 
@@ -100,19 +108,18 @@ export default function SobrePage() {
         <div className="absolute inset-0 grid-pattern opacity-30" />
         <div className="relative max-w-3xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Pronto para fazer parte?
+            Pronto para começar?
           </h2>
           <p className="text-slate-300 mb-8">
-            Seja cliente ou fornecedor, o Mercado Livre GD tem uma oportunidade
-            para você.
+            A análise é gratuita e sem compromisso. Você recebe a proposta antes de decidir qualquer coisa.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/economizar" className="btn-primary">
-              Quero Economizar
+              Solicitar análise gratuita
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link href="/fornecedor" className="btn-outline-white">
-              Sou Fornecedor
+              Cadastrar energia disponível
             </Link>
           </div>
         </div>
