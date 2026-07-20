@@ -1,17 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
-
-function checkAuth(): boolean {
-  const cookieStore = cookies();
-  const session = cookieStore.get("admin_session")?.value;
-  const adminPass = process.env.ADMIN_PASSWORD;
-  if (!adminPass || !session) return false;
-  return session === Buffer.from(adminPass).toString("base64");
-}
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export async function GET() {
-  if (!checkAuth()) {
+  if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 

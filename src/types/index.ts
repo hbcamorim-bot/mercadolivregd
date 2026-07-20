@@ -9,6 +9,7 @@ export type StatusNegociacao =
   | "NAO_CONVERTIDO";
 
 export type StatusFornecedor =
+  | "NOVO_ONBOARDING"
   | "ATIVO"
   | "EM_NEGOCIACAO"
   | "PARCEIRO"

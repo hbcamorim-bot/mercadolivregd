@@ -41,3 +41,7 @@ next-env.d.ts
 # uploads
 /public/uploads/*
 !/public/uploads/.gitkeep
+/.data/
+
+# generated code-map reports and cache
+/graphify-out/

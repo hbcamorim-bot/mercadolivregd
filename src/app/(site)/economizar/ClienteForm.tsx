@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, Loader2, Upload, Info } from "lucide-react";
+import { CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { ESTADOS_BR, DISTRIBUIDORAS } from "@/lib/utils";
 
 const schema = z.object({
@@ -29,8 +29,6 @@ export default function ClienteForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [contaFile, setContaFile] = useState<File | null>(null);
-  const [docFile, setDocFile] = useState<File | null>(null);
 
   const {
     register,
@@ -44,9 +42,6 @@ export default function ClienteForm() {
     try {
       const body = new FormData();
       Object.entries(data).forEach(([k, v]) => body.append(k, String(v)));
-      if (contaFile) body.append("contaEnergia", contaFile);
-      if (docFile) body.append("documento", docFile);
-
       const res = await fetch("/api/clientes", { method: "POST", body });
       if (!res.ok) {
         const j = await res.json();
@@ -72,8 +67,8 @@ export default function ClienteForm() {
           Cadastro recebido com sucesso!
         </h2>
         <p className="text-slate-500 max-w-md mx-auto">
-          Nossa equipe analisará seu perfil e entrará em contato por e-mail e
-          WhatsApp em até 2 dias úteis com as opções disponíveis para você.
+          A unidade será analisada quanto à distribuidora, consumo e capacidade
+          disponível. O cadastro não representa adesão ou contratação automática.
         </p>
       </div>
     );
@@ -179,49 +174,15 @@ export default function ClienteForm() {
       <div className="card">
         <h2 className="font-bold text-navy text-lg mb-2 flex items-center gap-2">
           <span className="w-7 h-7 rounded-full bg-energy-500 text-white text-xs font-bold flex items-center justify-center">4</span>
-          Documentos
+          Documentos em etapa segura
         </h2>
-        <div className="flex items-start gap-2 mb-5 p-3 bg-blue-50 rounded-lg">
-          <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-          <p className="text-xs text-blue-700">
-            Os documentos são necessários para verificar a titularidade da conta,
-            a distribuidora e o histórico de consumo. Eles são tratados com
-            confidencialidade e usados exclusivamente para análise técnica.
+        <div className="flex items-start gap-3 mt-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+          <ShieldCheck className="w-5 h-5 text-emerald-700 flex-shrink-0 mt-0.5" />
+          <p className="text-xs leading-5 text-emerald-900">
+            Não solicitamos RG, CNH ou fatura neste formulário público. Se a análise
+            inicial for compatível, os documentos serão pedidos em um ambiente privado
+            durante a qualificação e a adesão.
           </p>
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className="label">Conta de energia (PDF ou imagem)</label>
-            <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-energy-400 hover:bg-energy-50 transition-all">
-              <Upload className="w-6 h-6 text-slate-400 mb-2" />
-              <span className="text-sm text-slate-500">
-                {contaFile ? contaFile.name : "Clique para anexar"}
-              </span>
-              <span className="text-xs text-slate-400 mt-0.5">PDF, JPG, PNG — máx. 5MB</span>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                className="hidden"
-                onChange={(e) => setContaFile(e.target.files?.[0] ?? null)}
-              />
-            </label>
-          </div>
-          <div>
-            <label className="label">CNH ou RG do titular</label>
-            <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-energy-400 hover:bg-energy-50 transition-all">
-              <Upload className="w-6 h-6 text-slate-400 mb-2" />
-              <span className="text-sm text-slate-500">
-                {docFile ? docFile.name : "Clique para anexar"}
-              </span>
-              <span className="text-xs text-slate-400 mt-0.5">PDF, JPG, PNG — máx. 5MB</span>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                className="hidden"
-                onChange={(e) => setDocFile(e.target.files?.[0] ?? null)}
-              />
-            </label>
-          </div>
         </div>
       </div>
 

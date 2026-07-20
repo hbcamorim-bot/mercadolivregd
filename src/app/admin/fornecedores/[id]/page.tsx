@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   ArrowLeft, Save, Loader2, CheckCircle2,
@@ -8,7 +8,7 @@ import {
 import { ESTADOS_BR, DISTRIBUIDORAS, STATUS_LABELS, STATUS_COLORS, formatDate } from "@/lib/utils";
 import type { Fornecedor } from "@/types";
 
-const ALL_STATUSES = ["ATIVO", "EM_NEGOCIACAO", "PARCEIRO", "INATIVO"];
+const ALL_STATUSES = ["NOVO_ONBOARDING", "ATIVO", "EM_NEGOCIACAO", "PARCEIRO", "INATIVO"];
 
 export default function FornecedorDetailPage() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function FornecedorDetailPage() {
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState<Partial<Fornecedor>>({});
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const res = await fetch(`/api/admin/fornecedores/${id}`);
     if (res.status === 401) { router.push("/admin/login"); return; }
@@ -29,9 +29,9 @@ export default function FornecedorDetailPage() {
     setFornecedor(data);
     setForm(data);
     setLoading(false);
-  }
+  }, [id, router]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>

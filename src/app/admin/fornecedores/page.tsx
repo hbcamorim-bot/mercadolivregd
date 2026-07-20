@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -14,7 +14,7 @@ import {
 import { STATUS_LABELS, STATUS_COLORS, formatDate } from "@/lib/utils";
 import type { Fornecedor } from "@/types";
 
-const ALL_STATUSES = ["ATIVO", "EM_NEGOCIACAO", "PARCEIRO", "INATIVO"];
+const ALL_STATUSES = ["NOVO_ONBOARDING", "ATIVO", "EM_NEGOCIACAO", "PARCEIRO", "INATIVO"];
 
 export default function AdminFornecedoresPage() {
   const router = useRouter();
@@ -23,15 +23,15 @@ export default function AdminFornecedoresPage() {
   const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const res = await fetch("/api/admin/fornecedores");
     if (res.status === 401) { router.push("/admin/login"); return; }
     setFornecedores(await res.json());
     setLoading(false);
-  }
+  }, [router]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(); }, [load]);
 
   async function updateStatus(id: string, status: string) {
     setUpdatingId(id);

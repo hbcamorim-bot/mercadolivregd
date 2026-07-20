@@ -38,32 +38,33 @@ export default function PoliticaPrivacidadePage() {
             <li>Endereço de e-mail e telefone</li>
             <li>Endereço residencial ou comercial</li>
             <li>Informações sobre o consumo de energia (distribuidora, valor médio, kWh)</li>
-            <li>Documentos: conta de energia e documento de identificação</li>
+            <li>Documentos solicitados apenas em etapa privada de qualificação, quando necessários</li>
           </ul>
 
           <h2>3. Finalidade do Tratamento</h2>
           <p>Os dados são utilizados exclusivamente para:</p>
           <ul>
             <li>Análise técnica e comercial do perfil de consumo energético</li>
-            <li>Matching com fornecedores de energia compatíveis</li>
-            <li>Contato comercial e envio de propostas personalizadas</li>
+            <li>Matching com estruturas e usinas compatíveis na mesma distribuidora</li>
+            <li>Contato comercial, análise de adesão e envio de propostas de locação de quota</li>
             <li>Cumprimento de obrigações legais e regulatórias</li>
           </ul>
 
           <h2>4. Compartilhamento de Dados</h2>
           <p>
-            Seus dados poderão ser compartilhados com fornecedores de energia
-            parceiros, exclusivamente para fins de viabilização do contrato de
-            fornecimento. Não vendemos, alugamos nem cedemos dados a terceiros
+            Seus dados poderão ser compartilhados com o fornecedor responsável,
+            sua entidade de geração compartilhada e prestadores necessários ao
+            processo, exclusivamente para análise, adesão, locação e ativação.
+            Não vendemos, alugamos nem cedemos dados a terceiros
             para fins de marketing ou publicidade.
           </p>
 
           <h2>5. Armazenamento e Segurança</h2>
           <p>
-            Os dados e documentos são armazenados em ambiente seguro, com
-            criptografia em trânsito e em repouso. Adotamos medidas técnicas e
-            organizacionais adequadas para proteger seus dados contra acesso
-            não autorizado, perda ou destruição.
+            Adotamos transmissão segura, controle de acesso, sessões assinadas,
+            arquivos não públicos e medidas organizacionais para reduzir acesso
+            não autorizado, perda ou destruição. Documentos não são solicitados
+            no formulário público de pré-cadastro.
           </p>
 
           <h2>6. Prazo de Retenção</h2>

@@ -5,18 +5,18 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Zap,
-  LayoutDashboard,
   Users,
   Building2,
+  Route,
   Menu,
   X,
   LogOut,
 } from "lucide-react";
 
 const NAV = [
-  { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/clientes", icon: Users, label: "Clientes" },
-  { href: "/admin/fornecedores", icon: Building2, label: "Fornecedores" },
+  { href: "/admin/operacao", icon: Route, label: "Operação GD" },
+  { href: "/admin/clientes", icon: Users, label: "Cadastros legados" },
+  { href: "/admin/fornecedores", icon: Building2, label: "Leads fornecedores" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -76,9 +76,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 flex">
+    <div className="min-h-screen bg-[#f4f6f1] flex">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-navy flex-shrink-0">
+      <aside className="hidden md:flex flex-col w-64 bg-slate-950 flex-shrink-0">
         <Sidebar />
       </aside>
 
@@ -90,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         />
       )}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-56 bg-navy flex flex-col md:hidden transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-950 flex flex-col md:hidden transition-transform duration-300 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
           <span className="font-semibold text-slate-700 text-sm">
-            {NAV.find((n) => n.href === pathname)?.label ?? "Admin"}
+            {NAV.find((n) => pathname.startsWith(n.href))?.label ?? "Admin"}
           </span>
           <div className="ml-auto">
             <Link

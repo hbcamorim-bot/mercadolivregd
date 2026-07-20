@@ -63,8 +63,8 @@ export default function FornecedorForm() {
           Cadastro recebido!
         </h2>
         <p className="text-slate-500 max-w-md mx-auto">
-          Nossa equipe comercial analisará as informações e entrará em contato
-          em até 2 dias úteis para discutir oportunidades de negociação.
+          Nossa equipe analisará a estrutura informada e entrará em contato
+          para organizar entidade, usinas, capacidade e regras comerciais.
         </p>
       </div>
     );
@@ -110,7 +110,7 @@ export default function FornecedorForm() {
           </div>
 
           <div>
-            <label className="label">Volume de kWh disponível para comercialização *</label>
+            <label className="label">Capacidade mensal estimada disponível (kWh) *</label>
             <input
               {...register("kwhDisponivel")}
               type="number"
@@ -155,7 +155,7 @@ export default function FornecedorForm() {
             <textarea
               {...register("observacoes")}
               rows={3}
-              placeholder="Informações adicionais sobre sua oferta, condições, prazos..."
+              placeholder="Usinas, entidade, situação documental, capacidade e distribuidoras..."
               className="input-field resize-none"
             />
           </div>
@@ -179,7 +179,7 @@ export default function FornecedorForm() {
             Enviando cadastro...
           </>
         ) : (
-          "Cadastrar minha energia"
+          "Solicitar onboarding"
         )}
       </button>
     </form>
