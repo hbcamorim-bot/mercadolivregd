@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -37,7 +37,7 @@ export default function AdminClientesPage() {
   const [filterEstado, setFilterEstado] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
     if (filterStatus) params.set("status", filterStatus);
@@ -46,9 +46,9 @@ export default function AdminClientesPage() {
     if (res.status === 401) { router.push("/admin/login"); return; }
     setClientes(await res.json());
     setLoading(false);
-  }
+  }, [filterEstado, filterStatus, router]);
 
-  useEffect(() => { load(); }, [filterStatus, filterEstado]);
+  useEffect(() => { load(); }, [load]);
 
   async function updateStatus(id: string, status: string) {
     setUpdatingId(id);

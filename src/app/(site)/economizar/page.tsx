@@ -1,58 +1,24 @@
-import type { Metadata } from "next";
-import ClienteForm from "./ClienteForm";
-import { ShieldCheck, FileCheck, Lock, TrendingDown } from "lucide-react";
+import type { Metadata } from "next"
+import { FileCheck, Gauge, Lock, Network } from "lucide-react"
+import ClienteForm from "./ClienteForm"
 
 export const metadata: Metadata = {
-  title: "Quero Economizar na Minha Conta de Energia",
-  description:
-    "Cadastre-se gratuitamente e descubra quanto você pode economizar na conta de luz com o Mercado Livre GD.",
-};
+  title: "Pré-cadastro de oportunidade",
+  description: "Cadastre uma unidade consumidora para análise de compatibilidade com uma estrutura de geração compartilhada.",
+}
 
-const SECURITY = [
-  { icon: Lock, text: "Dados criptografados e protegidos" },
-  { icon: ShieldCheck, text: "Tratamento conforme a LGPD" },
-  { icon: FileCheck, text: "Documentos usados apenas para análise" },
-  { icon: TrendingDown, text: "Economia média de 20% a 35%" },
-];
+const points = [
+  [Lock, "Consentimento e origem registrados"],
+  [Network, "Matching na mesma distribuidora"],
+  [Gauge, "Quota dimensionada pelo consumo"],
+  [FileCheck, "Adesão e contrato antes da ativação"],
+] as const
 
 export default function EconomizarPage() {
   return (
-    <div className="pt-20">
-      {/* Hero */}
-      <section className="bg-gradient-hero py-16 relative overflow-hidden">
-        <div className="absolute inset-0 grid-pattern opacity-30" />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <span className="inline-block px-4 py-1.5 bg-white/10 text-energy-400 text-sm font-semibold rounded-full mb-4">
-              Cadastro Gratuito
-            </span>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Quero economizar na minha conta de energia
-            </h1>
-            <p className="text-slate-300 max-w-xl mx-auto">
-              Preencha o formulário abaixo. Nossa equipe analisa o seu perfil
-              e entra em contato com uma proposta personalizada.
-            </p>
-          </div>
-
-          {/* Security badges */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-            {SECURITY.map((s) => (
-              <div key={s.text} className="glass rounded-xl p-3 flex items-center gap-2">
-                <s.icon className="w-4 h-4 text-energy-400 flex-shrink-0" />
-                <span className="text-xs text-slate-300">{s.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Form */}
-      <section className="py-12 bg-slate-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ClienteForm />
-        </div>
-      </section>
+    <div className="bg-[#f4f6f1] pt-20">
+      <section className="relative overflow-hidden bg-[#071d19] py-20 text-white"><div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(178,255,73,.12)_1px,transparent_1px),linear-gradient(90deg,rgba(178,255,73,.12)_1px,transparent_1px)] [background-size:64px_64px]" /><div className="relative mx-auto max-w-5xl px-5 text-center sm:px-8"><span className="text-xs font-bold uppercase tracking-[0.2em] text-[#b2ff49]">Oportunidade comercial</span><h1 className="mx-auto mt-5 max-w-3xl font-display text-4xl font-semibold leading-tight sm:text-6xl">Cadastre a unidade para uma análise de compatibilidade.</h1><p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-[#bdd0c9]">O cadastro não garante adesão ou economia. Primeiro verificamos distribuidora, consumo, capacidade disponível e estrutura do fornecedor.</p><div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">{points.map(([Icon, text]) => <div key={text} className="rounded-2xl border border-white/10 bg-white/[.05] p-4 text-left"><Icon className="h-5 w-5 text-[#b2ff49]" /><p className="mt-4 text-xs leading-5 text-[#bdd0c9]">{text}</p></div>)}</div></div></section>
+      <section className="py-14"><div className="mx-auto max-w-3xl px-5 sm:px-8"><div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs leading-5 text-emerald-900">Use este formulário somente com ciência do titular. No painel operacional, o parceiro responsável e a versão do consentimento ficam vinculados à oportunidade.</div><ClienteForm /></div></section>
     </div>
-  );
+  )
 }

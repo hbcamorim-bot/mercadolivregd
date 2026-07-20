@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   ArrowLeft, Save, Loader2, FileText, Contact2,
@@ -29,7 +29,7 @@ export default function ClienteDetailPage() {
   const [deletingDoc, setDeletingDoc] = useState(false);
   const [form, setForm] = useState<Partial<Cliente>>({});
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const res = await fetch(`/api/admin/clientes/${id}`);
     if (res.status === 401) { router.push("/admin/login"); return; }
@@ -38,9 +38,9 @@ export default function ClienteDetailPage() {
     setCliente(data);
     setForm(data);
     setLoading(false);
-  }
+  }, [id, router]);
 
-  useEffect(() => { load(); }, [id]);
+  useEffect(() => { load(); }, [load]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));

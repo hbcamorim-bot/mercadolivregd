@@ -1,26 +1,21 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { cookies } from "next/headers";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 
-function checkAuth(): boolean {
-  const session = cookies().get("admin_session")?.value;
-  const adminPass = process.env.ADMIN_PASSWORD;
-  if (!adminPass || !session) return false;
-  return session === Buffer.from(adminPass).toString("base64");
-}
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminAuthenticated())) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
-  if (!checkAuth()) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-
-  const cliente = await prisma.cliente.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+  const cliente = await prisma.cliente.findUnique({ where: { id } });
   if (!cliente) return NextResponse.json({ error: "Cliente não encontrado" }, { status: 404 });
 
   return NextResponse.json(cliente);
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
-  if (!checkAuth()) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (!(await isAdminAuthenticated())) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
 
+  const { id } = await params;
   const body = await request.json();
   const {
     nome, cpf, email, telefone, endereco, cidade, estado, cep,
@@ -28,7 +23,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   } = body;
 
   const cliente = await prisma.cliente.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       nome, cpf, email, telefone, endereco, cidade, estado, cep,
       distribuidora,

@@ -1,73 +1,62 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
-import { saveUploadedFile } from "@/lib/server-utils";
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { prisma } from "@/lib/db"
+import { checkRateLimit, getRequestClientKey } from "@/lib/rate-limit"
+
+const schema = z.object({
+  nome: z.string().trim().min(3).max(200),
+  cpf: z.string().trim().min(11).max(18),
+  email: z.string().trim().email().max(200),
+  telefone: z.string().trim().min(10).max(32),
+  endereco: z.string().trim().min(5).max(300),
+  cidade: z.string().trim().min(2).max(120),
+  estado: z.string().trim().length(2).transform((value) => value.toUpperCase()),
+  cep: z.string().trim().min(8).max(10),
+  distribuidora: z.string().trim().min(2).max(160),
+  valorMedio: z.coerce.number().finite().positive().max(100_000_000),
+  consumoMedio: z.coerce.number().finite().positive().max(1_000_000_000).optional(),
+  aceiteLgpd: z.literal("true"),
+  aceitePrivacidade: z.literal("true"),
+})
 
 export async function POST(request: Request) {
+  const limit = checkRateLimit(`consumer-lead:${getRequestClientKey(request)}`, 8, 60 * 60 * 1000)
+  if (!limit.allowed) {
+    return NextResponse.json({ error: "Limite de cadastros atingido. Tente mais tarde." }, { status: 429 })
+  }
+
   try {
-    const formData = await request.formData();
-
-    const nome = formData.get("nome") as string;
-    const cpf = formData.get("cpf") as string;
-    const email = formData.get("email") as string;
-    const telefone = formData.get("telefone") as string;
-    const endereco = formData.get("endereco") as string;
-    const cidade = formData.get("cidade") as string;
-    const estado = formData.get("estado") as string;
-    const cep = formData.get("cep") as string;
-    const distribuidora = formData.get("distribuidora") as string;
-    const valorMedio = parseFloat(formData.get("valorMedio") as string);
-    const consumoMedioRaw = formData.get("consumoMedio");
-    const consumoMedio = consumoMedioRaw ? parseFloat(consumoMedioRaw as string) : null;
-    const aceiteLgpd = formData.get("aceiteLgpd") === "true";
-    const aceitePrivacidade = formData.get("aceitePrivacidade") === "true";
-
-    if (!nome || !cpf || !email || !telefone || !distribuidora || !valorMedio) {
-      return NextResponse.json(
-        { error: "Campos obrigatórios ausentes" },
-        { status: 400 }
-      );
-    }
-
-    let contaEnergiaUrl: string | null = null;
-    let documentoUrl: string | null = null;
-
-    const contaFile = formData.get("contaEnergia") as File | null;
-    if (contaFile && contaFile.size > 0) {
-      contaEnergiaUrl = await saveUploadedFile(contaFile, "conta");
-    }
-
-    const docFile = formData.get("documento") as File | null;
-    if (docFile && docFile.size > 0) {
-      documentoUrl = await saveUploadedFile(docFile, "doc");
-    }
-
+    const formData = await request.formData()
+    const payload = schema.parse(Object.fromEntries(formData.entries()))
     const cliente = await prisma.cliente.create({
       data: {
-        nome,
-        cpf,
-        email,
-        telefone,
-        endereco,
-        cidade,
-        estado,
-        cep,
-        distribuidora,
-        valorMedio,
-        consumoMedio,
-        contaEnergiaUrl,
-        documentoUrl,
-        aceiteLgpd,
-        aceitePrivacidade,
+        nome: payload.nome,
+        cpf: payload.cpf,
+        email: payload.email,
+        telefone: payload.telefone,
+        endereco: payload.endereco,
+        cidade: payload.cidade,
+        estado: payload.estado,
+        cep: payload.cep,
+        distribuidora: payload.distribuidora,
+        valorMedio: payload.valorMedio,
+        consumoMedio: payload.consumoMedio ?? null,
+        contaEnergiaUrl: null,
+        documentoUrl: null,
+        aceiteLgpd: true,
+        aceitePrivacidade: true,
         status: "NOVO_CADASTRO",
       },
-    });
-
-    return NextResponse.json({ success: true, id: cliente.id }, { status: 201 });
-  } catch (err) {
-    console.error("[POST /api/clientes]", err);
-    return NextResponse.json(
-      { error: "Erro interno ao processar cadastro" },
-      { status: 500 }
-    );
+    })
+    return NextResponse.json({ success: true, id: cliente.id }, { status: 201 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: "Revise os campos obrigatórios e os consentimentos." }, { status: 400 })
+    }
+    if (error instanceof Error && (error.message.includes("arquivo") || error.message.includes("MB"))) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+    console.error("[POST /api/clientes]", error)
+    return NextResponse.json({ error: "Erro interno ao processar cadastro" }, { status: 500 })
   }
 }

@@ -1,0 +1,17 @@
+.git
+.github
+.next
+.vercel
+.data
+node_modules
+coverage
+graphify-out
+docs
+deploy/vps/.env
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+*.tsbuildinfo

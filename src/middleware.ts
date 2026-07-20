@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { SESSION_COOKIE, verifyAdminSession } from "@/lib/auth";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const session = request.cookies.get("admin_session")?.value;
-    const adminPass = process.env.ADMIN_PASSWORD;
+  const isLoginRoute = pathname === "/admin/login" || pathname === "/api/admin/auth";
+  const isProtectedRoute = pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
 
-    const isValid =
-      adminPass &&
-      session &&
-      session === Buffer.from(adminPass).toString("base64");
+  if (isProtectedRoute && !isLoginRoute) {
+    const isValid = await verifyAdminSession(request.cookies.get(SESSION_COOKIE)?.value);
 
+    if (!isValid && pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
     if (!isValid) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
     }
   }
 
@@ -22,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };

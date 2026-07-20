@@ -8,45 +8,806 @@ datasource db {
 }
 
 model Cliente {
-  id                String           @id @default(cuid())
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  nome              String
-  cpf               String
-  email             String
-  telefone          String
+  nome     String
+  cpf      String
+  email    String
+  telefone String
 
-  endereco          String
-  cidade            String
-  estado            String
-  cep               String
+  endereco String
+  cidade   String
+  estado   String
+  cep      String
 
-  distribuidora     String
-  valorMedio        Float
-  consumoMedio      Float?
+  distribuidora String
+  valorMedio    Float
+  consumoMedio  Float?
 
-  contaEnergiaUrl   String?
-  documentoUrl      String?
+  contaEnergiaUrl String?
+  documentoUrl    String?
 
-  status            String           @default("NOVO_CADASTRO")
-  observacoes       String?
+  status      String  @default("NOVO_CADASTRO")
+  observacoes String?
 
-  aceiteLgpd        Boolean          @default(false)
-  aceitePrivacidade Boolean          @default(false)
+  aceiteLgpd        Boolean @default(false)
+  aceitePrivacidade Boolean @default(false)
 }
 
 model Fornecedor {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nome           String
+  email          String
+  telefone       String
+  kwhDisponivel  Float
+  regiaoAtuacao  String
+  distribuidoras String
+  observacoes    String?
+  status         String  @default("ATIVO")
+}
+
+enum OrganizationType {
+  PLATFORM
+  SUPPLIER
+  PARTNER
+  ASSOCIATION
+  COOPERATIVE
+  CONSORTIUM
+  OTHER
+}
+
+enum OrganizationStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+enum MembershipRole {
+  PLATFORM_ADMIN
+  SUPPLIER_ADMIN
+  SUPPLIER_OPERATOR
+  COMMERCIAL_PARTNER
+  VIEWER
+}
+
+enum SharedGenerationEntityType {
+  ASSOCIATION
+  COOPERATIVE
+  CONSORTIUM
+  OTHER
+}
+
+enum QualificationStatus {
+  DRAFT
+  DOCUMENTS_PENDING
+  UNDER_REVIEW
+  APPROVED_FOR_PUBLICATION
+  SUSPENDED
+  REJECTED
+}
+
+enum PlantStatus {
+  DRAFT
+  UNDER_REVIEW
+  OPERATIONAL
+  SUSPENDED
+  INACTIVE
+}
+
+enum EnergySource {
+  SOLAR
+  WIND
+  HYDRO
+  BIOMASS
+  BIOGAS
+  COGENERATION
+  OTHER
+}
+
+enum ProspectStatus {
+  NEW
+  CONTACTED
+  DOCUMENTS_PENDING
+  QUALIFIED
+  MATCHED
+  PROPOSAL_SENT
+  NEGOTIATING
+  MEMBERSHIP_PENDING
+  CONTRACT_PENDING
+  ACTIVATION_PENDING
+  ACTIVE
+  LOST
+  INELIGIBLE
+}
+
+enum MatchStatus {
+  SUGGESTED
+  REVIEWED
+  RESERVED
+  DISCARDED
+  EXPIRED
+}
+
+enum ReservationStatus {
+  ACTIVE
+  CONVERTED
+  RELEASED
+  EXPIRED
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum EntityMembershipStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  ENDED
+  REJECTED
+}
+
+enum AgreementStatus {
+  DRAFT
+  SIGNATURE_PENDING
+  SIGNED
+  ACTIVE
+  SUSPENDED
+  ENDED
+  CANCELLED
+}
+
+enum QuotaStatus {
+  RESERVED
+  CONTRACTED
+  ACTIVE
+  SUSPENDED
+  RELEASED
+}
+
+enum ActivationStatus {
+  NOT_STARTED
+  DOCUMENTS_PENDING
+  READY_TO_SUBMIT
+  SUBMITTED
+  UNDER_UTILITY_REVIEW
+  CORRECTION_REQUESTED
+  APPROVED
+  ACTIVATED
+  REJECTED
+  CANCELLED
+}
+
+enum AllocationStatus {
+  PLANNED
+  SUBMITTED
+  CONFIRMED
+  REJECTED
+  CANCELLED
+}
+
+enum CommissionType {
+  FIXED_ON_ACTIVATION
+  PERCENTAGE_OF_LEASE
+  RECURRING_PER_ACTIVE_UNIT
+}
+
+enum CommissionStatus {
+  PENDING
+  ELIGIBLE
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum ConsentType {
+  PRIVACY
+  DATA_PROCESSING
+  COMMERCIAL_CONTACT
+  DOCUMENT_SHARING
+}
+
+model Organization {
+  id             String             @id @default(cuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  name           String
+  legalName      String?
+  documentNumber String?            @unique
+  type           OrganizationType
+  status         OrganizationStatus @default(DRAFT)
+
+  supplierProfile          SupplierProfile?
+  memberships              UserMembership[]
+  commercialPartners       CommercialPartner[]
+  sharedGenerationEntities SharedGenerationEntity[]
+  plants                   GeneratorPlant[]
+  prospects                Prospect[]
+  commissionPolicies       CommissionPolicy[]
+  auditEvents              AuditEvent[]
+
+  @@index([type, status])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  email        String   @unique
+  passwordHash String?
+  active       Boolean  @default(true)
+
+  memberships       UserMembership[]
+  commercialPartner CommercialPartner?
+  auditEvents       AuditEvent[]
+}
+
+model UserMembership {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  userId         String
+  organizationId String
+  role           MembershipRole
+  active         Boolean        @default(true)
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId, role, active])
+}
+
+model SupplierProfile {
+  id                       String    @id @default(cuid())
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+  organizationId           String    @unique
+  contactName              String?
+  contactEmail             String?
+  contactPhone             String?
+  website                  String?
+  onboardingNotes          String?
+  responsibilityAcceptedAt DateTime?
+  responsibilityVersion    String?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model CommercialPartner {
+  id                     String             @id @default(cuid())
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+  supplierOrganizationId String
+  userId                 String?            @unique
+  name                   String
+  documentNumber         String?
+  email                  String?
+  phone                  String?
+  status                 OrganizationStatus @default(PENDING_REVIEW)
+
+  supplierOrganization Organization      @relation(fields: [supplierOrganizationId], references: [id], onDelete: Restrict)
+  user                 User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  prospects            Prospect[]
+  leadOwnerships       LeadOwnership[]
+  commissionEntries    CommissionEntry[]
+
+  @@index([supplierOrganizationId, status])
+}
+
+model DistributionUtility {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  code      String   @unique
+  active    Boolean  @default(true)
+
+  plants              GeneratorPlant[]
+  consumerUnits       ConsumerUnit[]
+  activationProcesses ActivationProcess[]
+}
+
+model SharedGenerationEntity {
+  id                     String                     @id @default(cuid())
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
+  supplierOrganizationId String
+  type                   SharedGenerationEntityType
+  name                   String
+  legalName              String?
+  documentNumber         String?
+  qualificationStatus    QualificationStatus        @default(DRAFT)
+  termsVersion           String?
+  termsStorageKey        String?
+
+  supplierOrganization Organization            @relation(fields: [supplierOrganizationId], references: [id], onDelete: Restrict)
+  plants               GeneratorPlant[]
+  documents            PlantDocument[]
+  memberships          AssociationMembership[]
+  agreements           QuotaLeaseAgreement[]
+
+  @@unique([supplierOrganizationId, name])
+  @@index([supplierOrganizationId, qualificationStatus])
+}
+
+model GeneratorPlant {
+  id                          String              @id @default(cuid())
+  createdAt                   DateTime            @default(now())
+  updatedAt                   DateTime            @updatedAt
+  supplierOrganizationId      String
+  sharedGenerationEntityId    String
+  distributionUtilityId       String
+  name                        String
+  internalCode                String
+  holderDocumentNumber        String?
+  generationUnitNumber        String?
+  city                        String
+  state                       String
+  source                      EnergySource
+  installedPowerKw            Decimal             @db.Decimal(14, 3)
+  averageMonthlyGenerationKwh Decimal?            @db.Decimal(16, 3)
+  connectedAt                 DateTime?
+  status                      PlantStatus         @default(DRAFT)
+  qualificationStatus         QualificationStatus @default(DRAFT)
+
+  supplierOrganization   Organization           @relation(fields: [supplierOrganizationId], references: [id], onDelete: Restrict)
+  sharedGenerationEntity SharedGenerationEntity @relation(fields: [sharedGenerationEntityId], references: [id], onDelete: Restrict)
+  distributionUtility    DistributionUtility    @relation(fields: [distributionUtilityId], references: [id], onDelete: Restrict)
+  documents              PlantDocument[]
+  capacityPeriods        CapacityPeriod[]
+  matches                Match[]
+  reservations           CapacityReservation[]
+  agreements             QuotaLeaseAgreement[]
+  quotas                 PlantQuota[]
+  allocations            Allocation[]
+
+  @@unique([supplierOrganizationId, internalCode])
+  @@index([distributionUtilityId, status, qualificationStatus])
+}
+
+model PlantDocument {
+  id                       String         @id @default(cuid())
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  plantId                  String?
+  sharedGenerationEntityId String?
+  type                     String
+  storageKey               String
+  originalName             String
+  mimeType                 String
+  sizeBytes                Int
+  sha256                   String?
+  status                   DocumentStatus @default(PENDING)
+  expiresAt                DateTime?
+
+  plant                  GeneratorPlant?         @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  sharedGenerationEntity SharedGenerationEntity? @relation(fields: [sharedGenerationEntityId], references: [id], onDelete: Cascade)
+
+  @@index([plantId, type, status])
+  @@index([sharedGenerationEntityId, type, status])
+}
+
+model CapacityPeriod {
   id              String   @id @default(cuid())
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  plantId         String
+  referenceMonth  DateTime
+  operationalKwh  Decimal  @db.Decimal(16, 3)
+  contractedKwh   Decimal  @default(0) @db.Decimal(16, 3)
+  reservedKwh     Decimal  @default(0) @db.Decimal(16, 3)
+  safetyMarginKwh Decimal  @default(0) @db.Decimal(16, 3)
+  availableKwh    Decimal  @db.Decimal(16, 3)
 
-  nome            String
-  email           String
-  telefone        String
-  kwhDisponivel   Float
-  regiaoAtuacao   String
-  distribuidoras  String
-  observacoes     String?
-  status          String   @default("ATIVO")
+  plant        GeneratorPlant        @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  matches      Match[]
+  reservations CapacityReservation[]
+
+  @@unique([plantId, referenceMonth])
+  @@index([referenceMonth, availableKwh])
+}
+
+model Prospect {
+  id                         String         @id @default(cuid())
+  createdAt                  DateTime       @default(now())
+  updatedAt                  DateTime       @updatedAt
+  supplierOrganizationId     String
+  currentCommercialPartnerId String
+  name                       String
+  documentNumber             String?
+  email                      String?
+  phone                      String?
+  source                     String?
+  status                     ProspectStatus @default(NEW)
+  notes                      String?
+  consentAt                  DateTime?
+  consentVersion             String?
+
+  supplierOrganization     Organization            @relation(fields: [supplierOrganizationId], references: [id], onDelete: Restrict)
+  currentCommercialPartner CommercialPartner       @relation(fields: [currentCommercialPartnerId], references: [id], onDelete: Restrict)
+  consumerUnits            ConsumerUnit[]
+  leadOwnerships           LeadOwnership[]
+  documents                ProspectDocument[]
+  consentRecords           ConsentRecord[]
+  associationMemberships   AssociationMembership[]
+  commissionEntries        CommissionEntry[]
+
+  @@index([supplierOrganizationId, status])
+  @@index([currentCommercialPartnerId, status])
+}
+
+model LeadOwnership {
+  id                  String    @id @default(cuid())
+  createdAt           DateTime  @default(now())
+  prospectId          String
+  commercialPartnerId String
+  startsAt            DateTime  @default(now())
+  endsAt              DateTime?
+  reason              String?
+
+  prospect          Prospect          @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  commercialPartner CommercialPartner @relation(fields: [commercialPartnerId], references: [id], onDelete: Restrict)
+
+  @@index([prospectId, startsAt])
+  @@index([commercialPartnerId, endsAt])
+}
+
+model ConsumerUnit {
+  id                           String   @id @default(cuid())
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+  prospectId                   String
+  distributionUtilityId        String
+  unitNumber                   String
+  city                         String
+  state                        String
+  customerClass                String?
+  tariffGroup                  String?
+  connectionType               String?
+  averageMonthlyConsumptionKwh Decimal? @db.Decimal(16, 3)
+  averageBillAmount            Decimal? @db.Decimal(14, 2)
+
+  prospect               Prospect                @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  distributionUtility    DistributionUtility     @relation(fields: [distributionUtilityId], references: [id], onDelete: Restrict)
+  readings               ConsumptionReading[]
+  documents              ProspectDocument[]
+  matches                Match[]
+  reservations           CapacityReservation[]
+  proposals              Proposal[]
+  associationMemberships AssociationMembership[]
+  agreements             QuotaLeaseAgreement[]
+  quotas                 PlantQuota[]
+  activationProcesses    ActivationProcess[]
+  allocations            Allocation[]
+  consentRecords         ConsentRecord[]
+
+  @@unique([distributionUtilityId, unitNumber])
+  @@index([prospectId])
+}
+
+model ConsumptionReading {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  consumerUnitId String
+  referenceMonth DateTime
+  consumptionKwh Decimal  @db.Decimal(16, 3)
+  billAmount     Decimal? @db.Decimal(14, 2)
+  source         String?
+
+  consumerUnit ConsumerUnit @relation(fields: [consumerUnitId], references: [id], onDelete: Cascade)
+
+  @@unique([consumerUnitId, referenceMonth])
+}
+
+model ProspectDocument {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  prospectId     String
+  consumerUnitId String?
+  type           String
+  storageKey     String
+  originalName   String
+  mimeType       String
+  sizeBytes      Int
+  sha256         String?
+  status         DocumentStatus @default(PENDING)
+  expiresAt      DateTime?
+
+  prospect     Prospect      @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  consumerUnit ConsumerUnit? @relation(fields: [consumerUnitId], references: [id], onDelete: SetNull)
+
+  @@index([prospectId, type, status])
+  @@index([consumerUnitId, type, status])
+}
+
+model Match {
+  id                      String      @id @default(cuid())
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+  consumerUnitId          String
+  plantId                 String
+  capacityPeriodId        String?
+  suggestedKwh            Decimal     @db.Decimal(16, 3)
+  estimatedMonthlySavings Decimal?    @db.Decimal(14, 2)
+  estimatedSavingsPercent Decimal?    @db.Decimal(5, 2)
+  score                   Decimal     @db.Decimal(5, 2)
+  rationale               Json?
+  status                  MatchStatus @default(SUGGESTED)
+  expiresAt               DateTime?
+
+  consumerUnit   ConsumerUnit         @relation(fields: [consumerUnitId], references: [id], onDelete: Cascade)
+  plant          GeneratorPlant       @relation(fields: [plantId], references: [id], onDelete: Restrict)
+  capacityPeriod CapacityPeriod?      @relation(fields: [capacityPeriodId], references: [id], onDelete: SetNull)
+  reservation    CapacityReservation?
+  proposals      Proposal[]
+
+  @@index([consumerUnitId, status])
+  @@index([plantId, status])
+}
+
+model CapacityReservation {
+  id               String            @id @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  matchId          String            @unique
+  plantId          String
+  consumerUnitId   String
+  capacityPeriodId String?
+  reservedKwh      Decimal           @db.Decimal(16, 3)
+  status           ReservationStatus @default(ACTIVE)
+  expiresAt        DateTime
+  releasedAt       DateTime?
+
+  match          Match           @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  plant          GeneratorPlant  @relation(fields: [plantId], references: [id], onDelete: Restrict)
+  consumerUnit   ConsumerUnit    @relation(fields: [consumerUnitId], references: [id], onDelete: Cascade)
+  capacityPeriod CapacityPeriod? @relation(fields: [capacityPeriodId], references: [id], onDelete: SetNull)
+
+  @@index([plantId, status, expiresAt])
+  @@index([consumerUnitId, status])
+}
+
+model Proposal {
+  id                      String         @id @default(cuid())
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  matchId                 String
+  consumerUnitId          String
+  version                 Int
+  status                  ProposalStatus @default(DRAFT)
+  quotaKwh                Decimal        @db.Decimal(16, 3)
+  monthlyLeaseAmount      Decimal        @db.Decimal(14, 2)
+  estimatedMonthlySavings Decimal?       @db.Decimal(14, 2)
+  estimatedSavingsPercent Decimal?       @db.Decimal(5, 2)
+  validUntil              DateTime
+  terms                   Json?
+  sentAt                  DateTime?
+  acceptedAt              DateTime?
+
+  match        Match                @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  consumerUnit ConsumerUnit         @relation(fields: [consumerUnitId], references: [id], onDelete: Cascade)
+  agreement    QuotaLeaseAgreement?
+
+  @@unique([matchId, version])
+  @@index([consumerUnitId, status])
+}
+
+model AssociationMembership {
+  id                       String                 @id @default(cuid())
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  sharedGenerationEntityId String
+  prospectId               String
+  consumerUnitId           String
+  status                   EntityMembershipStatus @default(PENDING)
+  membershipNumber         String?
+  joinedAt                 DateTime?
+  leftAt                   DateTime?
+
+  sharedGenerationEntity SharedGenerationEntity @relation(fields: [sharedGenerationEntityId], references: [id], onDelete: Restrict)
+  prospect               Prospect               @relation(fields: [prospectId], references: [id], onDelete: Restrict)
+  consumerUnit           ConsumerUnit           @relation(fields: [consumerUnitId], references: [id], onDelete: Restrict)
+  agreements             QuotaLeaseAgreement[]
+
+  @@unique([sharedGenerationEntityId, consumerUnitId])
+  @@index([prospectId, status])
+}
+
+model QuotaLeaseAgreement {
+  id                       String          @id @default(cuid())
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  proposalId               String          @unique
+  plantId                  String
+  consumerUnitId           String
+  sharedGenerationEntityId String
+  associationMembershipId  String?
+  status                   AgreementStatus @default(DRAFT)
+  quotaKwh                 Decimal         @db.Decimal(16, 3)
+  monthlyLeaseAmount       Decimal         @db.Decimal(14, 2)
+  startsAt                 DateTime?
+  endsAt                   DateTime?
+  signedAt                 DateTime?
+  externalSignatureId      String?
+  signedDocumentStorageKey String?
+
+  proposal               Proposal               @relation(fields: [proposalId], references: [id], onDelete: Restrict)
+  plant                  GeneratorPlant         @relation(fields: [plantId], references: [id], onDelete: Restrict)
+  consumerUnit           ConsumerUnit           @relation(fields: [consumerUnitId], references: [id], onDelete: Restrict)
+  sharedGenerationEntity SharedGenerationEntity @relation(fields: [sharedGenerationEntityId], references: [id], onDelete: Restrict)
+  associationMembership  AssociationMembership? @relation(fields: [associationMembershipId], references: [id], onDelete: SetNull)
+  quota                  PlantQuota?
+  activationProcess      ActivationProcess?
+  allocations            Allocation[]
+  commissionEntries      CommissionEntry[]
+
+  @@index([plantId, status])
+  @@index([consumerUnitId, status])
+}
+
+model PlantQuota {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  agreementId    String      @unique
+  plantId        String
+  consumerUnitId String
+  status         QuotaStatus @default(RESERVED)
+  quotaKwh       Decimal     @db.Decimal(16, 3)
+  reservedAt     DateTime?
+  contractedAt   DateTime?
+  activeAt       DateTime?
+  endedAt        DateTime?
+
+  agreement    QuotaLeaseAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  plant        GeneratorPlant      @relation(fields: [plantId], references: [id], onDelete: Restrict)
+  consumerUnit ConsumerUnit        @relation(fields: [consumerUnitId], references: [id], onDelete: Restrict)
+
+  @@index([plantId, status])
+  @@index([consumerUnitId, status])
+}
+
+model ActivationProcess {
+  id                    String           @id @default(cuid())
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  agreementId           String           @unique
+  consumerUnitId        String
+  distributionUtilityId String
+  status                ActivationStatus @default(NOT_STARTED)
+  protocolNumber        String?
+  expectedAt            DateTime?
+  submittedAt           DateTime?
+  activatedAt           DateTime?
+  notes                 String?
+
+  agreement           QuotaLeaseAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  consumerUnit        ConsumerUnit        @relation(fields: [consumerUnitId], references: [id], onDelete: Restrict)
+  distributionUtility DistributionUtility @relation(fields: [distributionUtilityId], references: [id], onDelete: Restrict)
+
+  @@index([distributionUtilityId, status])
+  @@index([consumerUnitId, status])
+}
+
+model Allocation {
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  agreementId    String
+  plantId        String
+  consumerUnitId String
+  referenceMonth DateTime
+  allocatedKwh   Decimal          @db.Decimal(16, 3)
+  percentage     Decimal?         @db.Decimal(7, 4)
+  priority       Int?
+  status         AllocationStatus @default(PLANNED)
+
+  agreement    QuotaLeaseAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  plant        GeneratorPlant      @relation(fields: [plantId], references: [id], onDelete: Restrict)
+  consumerUnit ConsumerUnit        @relation(fields: [consumerUnitId], references: [id], onDelete: Restrict)
+
+  @@unique([agreementId, referenceMonth])
+  @@index([plantId, referenceMonth, status])
+  @@index([consumerUnitId, referenceMonth])
+}
+
+model CommissionPolicy {
+  id                     String         @id @default(cuid())
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  supplierOrganizationId String
+  name                   String
+  type                   CommissionType
+  fixedAmount            Decimal?       @db.Decimal(14, 2)
+  percentage             Decimal?       @db.Decimal(7, 4)
+  recurringMonths        Int?
+  active                 Boolean        @default(true)
+
+  supplierOrganization Organization      @relation(fields: [supplierOrganizationId], references: [id], onDelete: Restrict)
+  entries              CommissionEntry[]
+
+  @@index([supplierOrganizationId, active])
+}
+
+model CommissionEntry {
+  id                  String           @id @default(cuid())
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  commercialPartnerId String
+  prospectId          String
+  agreementId         String
+  policyId            String?
+  status              CommissionStatus @default(PENDING)
+  amount              Decimal          @db.Decimal(14, 2)
+  competence          DateTime
+  eligibleAt          DateTime?
+  approvedAt          DateTime?
+  paidAt              DateTime?
+  paymentReference    String?
+
+  commercialPartner CommercialPartner   @relation(fields: [commercialPartnerId], references: [id], onDelete: Restrict)
+  prospect          Prospect            @relation(fields: [prospectId], references: [id], onDelete: Restrict)
+  agreement         QuotaLeaseAgreement @relation(fields: [agreementId], references: [id], onDelete: Restrict)
+  policy            CommissionPolicy?   @relation(fields: [policyId], references: [id], onDelete: SetNull)
+
+  @@unique([commercialPartnerId, agreementId, competence])
+  @@index([status, competence])
+}
+
+model ConsentRecord {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  prospectId     String
+  consumerUnitId String?
+  type           ConsentType
+  version        String
+  grantedAt      DateTime
+  revokedAt      DateTime?
+  source         String?
+
+  prospect     Prospect      @relation(fields: [prospectId], references: [id], onDelete: Cascade)
+  consumerUnit ConsumerUnit? @relation(fields: [consumerUnitId], references: [id], onDelete: SetNull)
+
+  @@index([prospectId, type, grantedAt])
+}
+
+model AuditEvent {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  organizationId String?
+  actorUserId    String?
+  entityType     String
+  entityId       String
+  action         String
+  metadata       Json?
+
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  actorUser    User?         @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([actorUserId, createdAt])
 }

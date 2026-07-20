@@ -21,8 +21,9 @@ export default function AdminLoginPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
+      const result = await res.json();
       if (!res.ok) {
-        setError("Senha incorreta. Tente novamente.");
+        setError(result.error ?? "Não foi possível autenticar.");
         return;
       }
       router.push("/admin");
@@ -68,6 +69,7 @@ export default function AdminLoginPage() {
                 placeholder="••••••••••"
                 className="w-full px-4 py-3 pr-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-energy-500 focus:border-transparent"
                 autoFocus
+                autoComplete="current-password"
               />
               <button
                 type="button"

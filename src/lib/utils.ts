@@ -43,6 +43,7 @@ export function formatCEP(cep: string): string {
 }
 
 export const STATUS_LABELS: Record<string, string> = {
+  NOVO_ONBOARDING: "Novo onboarding",
   NOVO_CADASTRO: "Novo Cadastro",
   DOCUMENTACAO_RECEBIDA: "Doc. Recebida",
   EM_ANALISE: "Em Análise",
@@ -58,6 +59,7 @@ export const STATUS_LABELS: Record<string, string> = {
 };
 
 export const STATUS_COLORS: Record<string, string> = {
+  NOVO_ONBOARDING: "bg-amber-100 text-amber-700",
   NOVO_CADASTRO: "bg-blue-100 text-blue-700",
   DOCUMENTACAO_RECEBIDA: "bg-purple-100 text-purple-700",
   EM_ANALISE: "bg-yellow-100 text-yellow-700",
